@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.todolist.mapper.TodolistMapper">
+    
+    <resultMap type="Todolist" id="TodolistResult">
+        <result property="id"    column="id"    />
+        <result property="work"    column="work"    />
+        <result property="done"    column="done"    />
+    </resultMap>
+
+    <sql id="selectTodolistVo">
+        select id, work, done from todolist
+    </sql>
+
+    <select id="selectTodolistList" parameterType="Todolist" resultMap="TodolistResult">
+        <include refid="selectTodolistVo"/>
+        <where>  
+            <if test="work != null  and work != ''"> and work = #{work}</if>
+            <if test="done != null  and done != ''"> and done = #{done}</if>
+        </where>
+    </select>
+    
+    <select id="selectTodolistById" parameterType="Long" resultMap="TodolistResult">
+        <include refid="selectTodolistVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTodolist" parameterType="Todolist" useGeneratedKeys="true" keyProperty="id">
+        insert into todolist
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="work != null">work,</if>
+            <if test="done != null">done,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="work != null">#{work},</if>
+            <if test="done != null">#{done},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTodolist" parameterType="Todolist">
+        update todolist
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="work != null">work = #{work},</if>
+            <if test="done != null">done = #{done},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTodolistById" parameterType="Long">
+        delete from todolist where id = #{id}
+    </delete>
+
+    <delete id="deleteTodolistByIds" parameterType="String">
+        delete from todolist where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
